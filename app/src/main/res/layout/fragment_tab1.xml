@@ -7,15 +7,47 @@
     android:orientation="vertical"
     tools:context="me.jihoon.bonae_android.MainActivity">
 
-    <com.facebook.login.widget.LoginButton
-        android:layout_width="wrap_content"
+    <EditText
+        android:id="@+id/editText1"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="4dp"
+        android:hint="이름검색" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:text="아는 친구"
+        android:textSize="18dp" />
+    <ListView
+        android:id="@+id/listView1_yes"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content">
-    </com.facebook.login.widget.LoginButton>
+    </ListView>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:text="모르는 친구"
+        android:textSize="18dp"/>
+    <ListView
+        android:id="@+id/listView1_no"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </ListView>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:text="Tab1"
         android:textSize="50dp"/>
+
+    <com.facebook.login.widget.LoginButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+    </com.facebook.login.widget.LoginButton>
 
 </LinearLayout>

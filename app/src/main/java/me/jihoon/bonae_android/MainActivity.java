@@ -48,8 +48,9 @@ public class MainActivity extends AppCompatActivity {
     private void setupViewPager(ViewPager viewpager) {
         SectionsPageAdapter adapter = new SectionsPageAdapter(getSupportFragmentManager());
         adapter.addFragment(new Tab1Fragment(), "친구");
-        adapter.addFragment(new Tab2Fragment(), "방");
-        adapter.addFragment(new Tab3Fragment(), "설정");
+        adapter.addFragment(new Tab2Fragment(), "받을 돈");
+        adapter.addFragment(new Tab3Fragment(), "줄 돈");
+        adapter.addFragment(new Tab4Fragment(), "설정");
         viewpager.setAdapter(adapter);
     }
 
