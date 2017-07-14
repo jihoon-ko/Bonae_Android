@@ -23,7 +23,7 @@
         android:text="아는 친구"
         android:textSize="18dp" />
     <ListView
-        android:id="@+id/listView1_yes"
+        android:id="@+id/listView_tab1yes"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
     </ListView>
@@ -34,7 +34,7 @@
         android:text="모르는 친구"
         android:textSize="18dp"/>
     <ListView
-        android:id="@+id/listView1_no"
+        android:id="@+id/listView_tab1no"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
     </ListView>

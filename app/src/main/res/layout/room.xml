@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:orientation="horizontal"
+    android:paddingTop="4dp"
+    android:paddingBottom="4dp"
+    android:paddingLeft="10dp"
+    android:paddingRight="4dp"
+    tools:context="me.jihoon.bonae_android.MainActivity">
+
+    <ImageView
+        android:id="@+id/room_image"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="#759DC8"
+        android:layout_gravity="center_vertical"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_marginLeft="16dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            android:layout_weight="2">
+
+            <TextView
+                android:id="@+id/roomTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:layout_marginRight="8dp"
+                android:text="Title of Room"
+                android:textSize="12dp"/>
+            <TextView
+                android:id="@+id/guestNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:text="10"
+                android:textSize="10dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="horizontal"
+            android:layout_weight="3">
+            <TextView
+                android:id="@+id/foodType"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:layout_marginRight="16dp"
+                android:text="치킨"
+                android:textSize="16dp"/>
+            <TextView
+                android:id="@+id/foodPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:text="20000원"
+                android:textSize="12dp"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
