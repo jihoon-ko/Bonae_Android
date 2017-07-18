@@ -47,6 +47,9 @@
         <activity android:name=".RegisterActivity" />
         <activity android:name=".CreateRoomActivity" />
         <activity android:name=".HostRoomActivity" />
+        <activity
+            android:name=".AddFriendActivity"
+            android:screenOrientation="portrait"/>
         <activity android:name=".GuestRoomActivity"></activity>
     </application>
 

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:orientation="horizontal"
+    android:paddingTop="4dp"
+    android:paddingBottom="4dp"
+    android:paddingLeft="10dp"
+    android:paddingRight="4dp"
+    tools:context="me.jihoon.bonae_android.MainActivity">
+
+    <ImageView
+        android:id="@+id/user_image"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="#759DC8"
+        android:layout_gravity="center_vertical"/>
+    <TextView
+        android:id="@+id/user_name"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="16dp"
+        android:gravity="center_vertical"
+        android:text="UserName"
+        android:textSize="16dp"/>
+    <ImageView
+        android:id="@+id/user_can_add"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/ic_person_add"
+        android:text="" />
+</LinearLayout>

@@ -124,6 +124,8 @@ public class MainActivity extends AppCompatActivity {
 
                 TabLayout tablayout = (TabLayout) findViewById(R.id.tabs);
                 tablayout.setupWithViewPager(mViewPager);
+            }else{
+                finish();
             }
         } else if (requestCode == REQ_CREATE_ROOM) {
             if (resultCode == RESULT_OK) {

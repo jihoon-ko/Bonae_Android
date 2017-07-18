@@ -1,6 +1,9 @@
 package me.jihoon.bonae_android;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +18,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * Created by q on 2017-07-14.
@@ -23,19 +33,38 @@ import java.util.ArrayList;
 
 public class CustomInfoAdapter {
     public static class UserAdapter extends BaseAdapter {
-        private ArrayList<CustomInfo.User> UserList = new ArrayList<CustomInfo.User>();
+        private ArrayList<CustomInfo.User> UserList;
+        private ArrayList<CustomInfo.User> SearchList;
+        private int adapter_id;
+        private String keyword;
+        public String token, facebookId, facebookName;
 
-        public UserAdapter() {
+        public UserAdapter(int id, String _token, String _fbId, String _fbName) {
+            UserList = new ArrayList<CustomInfo.User>();
+            SearchList = new ArrayList<CustomInfo.User>();
+            adapter_id = id;
+            keyword = "";
+            token = _token; facebookId = _fbId; facebookName = _fbName;
         }
-
+        public String getKeyword(){
+            return keyword;
+        }
         @Override
         public int getCount() {
-            return UserList.size();
+            if(adapter_id == 1) return SearchList.size();
+            else return UserList.size();
         }
 
+        public int userCnt(){
+            return UserList.size();
+        }
+        public CustomInfo.User get(int pos){
+            return UserList.get(pos);
+        }
         @Override
         public Object getItem(int position) {
-            return UserList.get(position);
+            if(adapter_id == 1) return SearchList.get(position);
+            else return UserList.get(position);
         }
 
         @Override
@@ -53,21 +82,102 @@ public class CustomInfoAdapter {
             }
             ImageView user_image = (ImageView) convertView.findViewById(R.id.user_image);
             TextView user_name = (TextView) convertView.findViewById(R.id.user_name);
-
             CustomInfo.User user = UserList.get(position);
 
             // user_image도 처리
             // Glide.with(getApplicationContext()).load(customAddress.getAdrsimage()).into(adrs_image);
+            new imageTask(user_image).execute(user.getUser_id());
             user_name.setText(user.getNickName());
 
             return convertView;
         }
-        public void addUser(String name) {
+        public void addUser(int pos, String fbId, String name, String bank, String num) {
             CustomInfo.User user = new CustomInfo.User();
+            user.setUser_id(fbId);
             user.setNickName(name);
-
-            UserList.add(user);
+            user.setAccountBank(bank);
+            user.setAccountNumber(num);
+            if(pos == -1) {
+                UserList.add(user);
+            }else{
+                UserList.add(pos, user);
+            }
+            changeData(keyword);
         }
+        public void removeUser(int pos){
+            UserList.remove(pos);
+            changeData(keyword);
+        }
+        public void clearUser(){
+            UserList.clear();
+            changeData(keyword);
+        }
+        public boolean admit(String str1, String str2){
+            str1 = str1.toLowerCase().replaceAll(" ", "");
+            str2 = str2.toLowerCase().replaceAll(" ", "");
+            return str1.contains(str2);
+        }
+        public void changeData(String new_keyword){
+            keyword = new_keyword;
+            if(adapter_id == 1) {
+                SearchList.clear();
+                notifyDataSetChanged();
+                for (int i = 0; i < UserList.size(); i++) {
+                    if (admit(UserList.get(i).getNickName(), keyword)) {
+                        SearchList.add(UserList.get(i));
+                        notifyDataSetChanged();
+                    }
+                }
+            }
+            notifyDataSetChanged();
+        }
+        private class imageTask extends AsyncTask<String, Void, Bitmap> {
+            ImageView iv;
+            public final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+            private OkHttpClient client;
+            public imageTask(ImageView _iv){
+                iv = _iv;
+                client = new OkHttpClient();
+            }
+            private String send(String url) throws IOException {
+                //RequestBody body = RequestBody.create(JSON, json);
+                Request request = new Request.Builder()
+                        .url(url)
+                        .addHeader("x-access-token", token)
+                        .addHeader("x-access-id", facebookId)
+                        .build();
+                Response response = client.newCall(request).execute();
+                return response.body().string();
+            }
+            @Override
+            protected Bitmap doInBackground(String... str){
+                try {
+                    System.out.println("id: " + adapter_id);
+                    String urlJson = send("http://52.78.17.108:3000/user/id/" + str[0] + "/picture/");
+                    JSONObject jsonObj = new JSONObject(urlJson);
+                    String url = jsonObj.getString("url");
+                    Bitmap res = null;
+                    try {
+                        InputStream in = new java.net.URL(url).openStream();
+                        res = BitmapFactory.decodeStream(in);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return res;
+                }catch(Exception e){
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+            @Override
+            protected void onPostExecute(Bitmap res){
+                //System.out.println(res);
+                if(res != null){
+                    super.onPostExecute(res);
+                    iv.setImageBitmap(res);
+                }
+            }
+        };
     }
 
     public static class RoomAdapter extends BaseAdapter {

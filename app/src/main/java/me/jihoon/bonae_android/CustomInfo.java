@@ -18,7 +18,7 @@ public class CustomInfo {
         private String NickName;
         private Drawable profileImage;
         private String accountBank;
-        private int accountNumber;
+        private String accountNumber;
         private List<Room> hostRoom;
         private List<Room> guestRoom;
         private List<String> friend;
@@ -54,10 +54,10 @@ public class CustomInfo {
             return this.accountBank;
         }
 
-        public void setAccountNumber (int NUMBER) {
+        public void setAccountNumber (String NUMBER) {
             this.accountNumber = NUMBER;
         }
-        public int getAccountNumber() {
+        public String getAccountNumber() {
             return this.accountNumber;
         }
 
