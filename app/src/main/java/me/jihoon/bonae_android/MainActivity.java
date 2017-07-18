@@ -37,6 +37,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     static final int REQ_ADD_LOGIN = 1;
     static final int REQ_CREATE_ROOM = 3;
+    static final int REQ_EDIT_PROFILE = 6;
     String Token = null;
     String Facebook_Id = null;
     String Facebook_Name = null;
@@ -134,6 +135,11 @@ public class MainActivity extends AppCompatActivity {
                 Boolean divide = intent.getExtras().getBoolean("divide");
 
                 new HTTPCreateRoom().execute("http://52.78.17.108:3000/room/create/", Token, Facebook_Id, Facebook_Name, foodType, foodPrice, divide.toString());
+            }
+        } else if (requestCode == REQ_EDIT_PROFILE) {
+            if (resultCode == RESULT_OK) {
+
+                
             }
         }
     }
