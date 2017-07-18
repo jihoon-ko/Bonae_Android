@@ -1,5 +1,7 @@
 package me.jihoon.bonae_android;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -11,6 +13,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -74,6 +77,29 @@ public class Tab1Fragment extends Fragment {
         Setting(inflater, container);
         yes_list = (ListView) view.findViewById(R.id.listView_tab1yes);
         yes_list.setAdapter(adapter);
+        yes_list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                final CustomInfo.User user = (CustomInfo.User) adapter.getItem(position);
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("친구를 삭제하시겠습니까?")
+                        .setMessage("친구를 삭제하시곘습니까?")
+                        .setCancelable(false)
+                        .setPositiveButton("확인", new DialogInterface.OnClickListener(){
+                            public void onClick(DialogInterface dialog, int whichButton){
+                                new deleteFriendTask().execute(user.getUser_id());
+                            }
+                        })
+                        .setNegativeButton("취소", new DialogInterface.OnClickListener(){
+                            public void onClick(DialogInterface dialog, int whichButton){
+                                dialog.cancel();
+                            }
+                        });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+                return false;
+            }
+        });
         //adapter.addUser("TestUser1");
         searchBox = (EditText) view.findViewById(R.id.editText1);
         searchBox.setText(adapter.getKeyword());
@@ -124,7 +150,48 @@ public class Tab1Fragment extends Fragment {
             }
         }
     }
-
+    private class deleteFriendTask extends AsyncTask<String, Void, String>{
+        public final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+        private OkHttpClient client;
+        private String send(String json, String url) throws IOException {
+            RequestBody body = RequestBody.create(JSON, json);
+            client = new OkHttpClient();
+            Request request = new Request.Builder()
+                    .url(url)
+                    .addHeader("x-access-token", Token)
+                    .addHeader("x-access-id", Facebook_Id)
+                    .post(body)
+                    .build();
+            Response response = client.newCall(request).execute();
+            return response.body().string();
+        }
+        @Override
+        protected String doInBackground(String... str){
+            System.out.println("!!");
+            try{
+                return send("{\"friend_id\":\"" + str[0] + "\"}", "http://52.78.17.108:3000/user/id/"+Facebook_Id+"/friends/delete/");
+            }catch(Exception e){
+                e.printStackTrace();
+                return null;
+            }
+        }
+        @Override
+        protected void onPostExecute(String res){
+            if(res != null){
+                try{
+                    JSONObject jsonObj = new JSONObject(res);
+                    if(jsonObj.getInt("ok") == 1){
+                        new getFriendListTask(false).execute();
+                    }else{
+                        System.out.println("Error while handling...");
+                    }
+                }catch(Exception e){
+                    System.out.println("Error while handling...");
+                    e.printStackTrace();
+                }
+            }
+        }
+    };
 }
 
 class getFriendListTask extends AsyncTask<String, Void, String>{
