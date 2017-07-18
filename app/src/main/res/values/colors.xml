@@ -3,4 +3,13 @@
     <color name="colorPrimary">#6BC6BD</color>
     <color name="colorPrimaryDark">#2F9B89</color>
     <color name="colorAccent">#EE2C2C</color>
+
+    <color name="YesColor">#FFF738</color>
+    <color name="NoColor">#525DFF</color>
+    <color name="profileBackground">#DDDDDD</color>
+    <color name="profileColor">#759DC8</color>
+
+    <color name="red">#ff0505</color>
+    <color name="yellow">#fff400</color>
+    <color name="green">#178513</color>
 </resources>

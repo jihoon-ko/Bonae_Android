@@ -1,10 +1,14 @@
 package me.jihoon.bonae_android;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +34,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -75,6 +80,11 @@ public class LoginActivity extends AppCompatActivity{
                     request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
                         @Override
                         public void onCompleted(JSONObject object, GraphResponse response) {
+                            Profile profile = Profile.getCurrentProfile();
+                            final String link = profile.getProfilePictureUri(100, 100).toString();
+
+                            getProfile(link);
+
                             String fb_id = null;
                             String fb_name = null;
                             Log.e("TAG", "Facebook Login Result" + response.toString());
@@ -128,6 +138,37 @@ public class LoginActivity extends AppCompatActivity{
             request.executeAsync();
             Log.e("already Login", "here!!");
         }
+    }
+
+    private void getProfile(final String link) {
+        final ImageView imageView = (ImageView) findViewById(R.id.myProfile);
+        imageView.setImageResource(R.color.yellow);
+
+        final Handler handler = new Handler();
+
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final Bitmap bitmap;
+                try {
+                    URL url = new URL(link);
+                    InputStream is = url.openStream();
+                    bitmap = BitmapFactory.decodeStream(is);
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            imageView.setImageBitmap(bitmap);
+                        }
+                    });
+                    imageView.setImageBitmap(bitmap);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread.start();
+
     }
 
     @Override

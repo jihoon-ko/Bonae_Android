@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="70dp"
+    android:gravity="center_vertical"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp">
+
+    <ImageView
+        android:id="@+id/guestTab_guestStatus"
+        android:layout_centerVertical="true"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginRight="24dp"
+        android:background="#000000"/>
+
+    <ImageView
+        android:id="@+id/guestTab_guestProfile"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@id/guestTab_guestStatus"
+        android:layout_marginRight="12dp"
+        android:src="#759DC8"/>
+    <TextView
+        android:id="@+id/guestTab_guestName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@id/guestTab_guestProfile"
+        android:layout_alignBaseline="@id/guestTab_guestProfile"
+        android:text="고지훈"
+        android:textSize="32dp"/>
+    <TextView
+        android:id="@+id/guestTab_guestMoney"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/guestTab_guestName"
+        android:layout_alignParentRight="true"
+        android:layout_marginLeft="10dp"
+        android:text="8000원"
+        android:textSize="28dp"/>
+</RelativeLayout>

@@ -11,38 +11,42 @@
         android:id="@+id/hostTab_hostInfo"
         android:layout_width="match_parent"
         android:layout_height="100dp"
-        android:paddingLeft="30dp"
-        android:paddingRight="30dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
         android:orientation="horizontal"
-        android:background="#DDDDDD">
+        android:background="@color/profileBackground">
         <ImageView
             android:id="@+id/hostTab_hostProfile"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_centerVertical="true"
             android:layout_gravity="center_vertical"
-            android:layout_marginRight="30dp"
-            android:src="#759DC8"/>
+            android:layout_marginRight="16dp"
+            android:src="@color/profileColor"/>
         <RelativeLayout
             android:layout_toRightOf="@id/hostTab_hostProfile"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
             android:paddingTop="8dp"
             android:paddingBottom="8dp">
             <TextView
                 android:id="@+id/hostTab_hostName"
+                android:layout_marginLeft="4dp"
+                android:layout_marginBottom="2dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="NAME"
-                android:textSize="30dp"/>
+                android:textSize="24dp"/>
             <TextView
                 android:id="@+id/hostTab_Bank"
                 android:layout_below="@id/hostTab_hostName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="10dp"
+                android:layout_marginRight="14dp"
+                android:layout_marginBottom="2dp"
                 android:text="계좌은행"
-                android:textSize="16dp"/>
+                android:textSize="12dp"/>
             <TextView
                 android:id="@+id/hostTab_hostBank"
                 android:layout_below="@id/hostTab_hostName"
@@ -51,15 +55,15 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="BANK"
-                android:textSize="18dp"/>
+                android:textSize="14dp"/>
             <TextView
                 android:id="@+id/hostTab_Number"
                 android:layout_below="@id/hostTab_Bank"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="10dp"
+                android:layout_marginRight="14dp"
                 android:text="계좌번호"
-                android:textSize="16dp"/>
+                android:textSize="12dp"/>
             <TextView
                 android:id="@+id/hostTab_hostNumber"
                 android:layout_below="@id/hostTab_hostBank"
@@ -68,59 +72,95 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="NUMBER"
-                android:textSize="18dp"/>
+                android:textSize="14dp"/>
         </RelativeLayout>
     </RelativeLayout>
-    <TextView
-        android:id="@+id/hostTab_date"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="date"/>
-    <TextView
-        android:id="@+id/hostTab_content"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="content"/>
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp">
+        <TextView
+            android:id="@+id/hostTab_notPayed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="정산 안된 사람:  "
+            android:textSize="16dp"/>
+        <TextView
+            android:id="@+id/hostTab_debit_left"
+            android:layout_toRightOf="@id/hostTab_notPayed"
+            android:layout_alignBaseline="@id/hostTab_notPayed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="3명"
+            android:textSize="16dp"/>
+        <TextView
+            android:id="@+id/hostTab_Date"
+            android:layout_below="@id/hostTab_notPayed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14dp"
+            android:text="날짜: "/>
+        <TextView
+            android:id="@+id/hostTab_date"
+            android:layout_below="@id/hostTab_notPayed"
+            android:layout_alignBaseline="@id/hostTab_Date"
+            android:layout_toRightOf="@id/hostTab_Date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14dp"
+            android:text="숫자링"/>
+        <TextView
+            android:id="@+id/hostTab_Keyword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="168dp"
+            android:text="종류:  "
+            android:textSize="16dp"/>
+        <TextView
+            android:id="@+id/hostTab_keyword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/hostTab_Keyword"
+            android:text="치킨"
+            android:textSize="16dp"/>
+
+        <TextView
+            android:id="@+id/hostTab_Content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/hostTab_Keyword"
+            android:layout_below="@id/hostTab_Keyword"
+            android:text="내용:  "
+            android:textSize="16dp"/>
+        <TextView
+            android:id="@+id/hostTab_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/hostTab_Content"
+            android:layout_below="@id/hostTab_Keyword"
+            android:text="content"
+            android:textSize="16dp"/>
+    </RelativeLayout>
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:paddingTop="6dp"
-        android:paddingBottom="6dp"
-        android:orientation="vertical"
-        android:layout_weight="1">
+        android:layout_height="wrap_content"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:orientation="vertical">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="돈내놔ㅠㅠ"
-            android:textSize="20dp"/>
+            android:text="정산 목록"
+            android:layout_marginBottom="16dp"
+            android:textSize="28dp"/>
         <ListView
-            android:id="@+id/hostTab_payNo"
+            android:id="@+id/hostTab_guests"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
         </ListView>
 
     </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:paddingTop="6dp"
-        android:paddingBottom="6dp"
-        android:orientation="vertical"
-        android:layout_weight="1">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="받았지롱~"
-            android:textSize="20dp"/>
-        <ListView
-            android:id="@+id/hostTab_payYes"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-        </ListView>
-
-    </LinearLayout>
-
-
-
 </LinearLayout>

@@ -20,17 +20,27 @@ public class CreateRoomActivity extends AppCompatActivity {
             public void onClick(View v) {
                 EditText foodType = (EditText) findViewById(R.id.foodType);
                 EditText foodPrice = (EditText) findViewById(R.id.foodPrice);
+                EditText content_text = (EditText) findViewById(R.id.content_text);
                 final String FoodType = foodType.getText().toString();
                 final String FoodPrice = foodPrice.getText().toString();
+                final String Content_text = content_text.getText().toString();
 
                 Intent intent = getIntent();
                 intent.putExtra("foodType", FoodType);
                 intent.putExtra("foodPrice", FoodPrice);
+                intent.putExtra("content_text", Content_text);
                 intent.putExtra("divide", true);
 
                 setResult(RESULT_OK, intent);
                 finish();
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = getIntent();
+        setResult(RESULT_CANCELED, intent);
+        finish();
     }
 }

@@ -82,14 +82,17 @@ public class Tab2Fragment extends Fragment{
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String HostRoomId = null;
+                String keyword = null;
                 try {
                     JSONArray hostRoom = UserJSON.getJSONArray("room_pending_host");
-                    JSONObject hostRoomJSON = hostRoom.getJSONObject(position);
+                    int len = hostRoom.length();
+                    JSONObject hostRoomJSON = hostRoom.getJSONObject(len-1-position);
                     HostRoomId = hostRoomJSON.getString("room");
+                    keyword = hostRoomJSON.getString("keyword");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                new HTTPConnectHostRoom().execute("http://52.78.17.108:3000/room/id/"+HostRoomId+"/", Token, Facebook_Id, Facebook_Name);
+                new HTTPConnectHostRoom().execute("http://52.78.17.108:3000/room/id/"+HostRoomId+"/", Token, Facebook_Id, Facebook_Name, keyword);
             }
         });
         return view;
@@ -97,7 +100,6 @@ public class Tab2Fragment extends Fragment{
 
     private CustomInfoAdapter.RoomAdapter makeHostRoom() {
         CustomInfoAdapter.RoomAdapter adapter = new CustomInfoAdapter.RoomAdapter();
-        adapter.addRoom("99887766", "네네치킨", "3 / 4", "5000", "2017-07-20");
         try {
             JSONArray HostRoom = UserJSON.getJSONArray("room_pending_host");
             int len = HostRoom.length();
@@ -116,8 +118,6 @@ public class Tab2Fragment extends Fragment{
             e.printStackTrace();
         }
 
-        adapter.addRoom("98765432", "큰통치킨", "2 / 3", "6000", "2017-07-16");
-
         return adapter;
     }
 
@@ -125,6 +125,7 @@ public class Tab2Fragment extends Fragment{
         String Token = null;
         String Facebook_Id = null;
         String Facebook_Name = null;
+        String keyword = null;
 
         @Override
         protected void onPreExecute() {
@@ -136,6 +137,7 @@ public class Tab2Fragment extends Fragment{
             Token = params[1];
             Facebook_Id = params[2];
             Facebook_Name = params[3];
+            keyword = params[4];
 
             String http_res = null;
             URL url = null;
@@ -175,7 +177,13 @@ public class Tab2Fragment extends Fragment{
             intent.putExtra("Token", Token);
             intent.putExtra("Facebook_Id", Facebook_Id);
             intent.putExtra("Facebook_Name", Facebook_Name);
-            intent.putExtra("roomInfo", result);
+            try {
+                JSONObject roomJSON = new JSONObject(result);
+                roomJSON.put("keyword", keyword);
+                intent.putExtra("roomInfo", roomJSON.toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
 
             startActivityForResult(intent, REQ_CONNECT_HOST_ROOM);
         }

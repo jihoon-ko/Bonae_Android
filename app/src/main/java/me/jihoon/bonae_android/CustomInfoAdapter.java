@@ -1,6 +1,7 @@
 package me.jihoon.bonae_android;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -135,85 +136,6 @@ public class CustomInfoAdapter {
         }
     }
 
-    public static class HostRoomAdapter extends BaseAdapter {
-        private ArrayList<CustomInfo.HostRoom> HostRoomList = new ArrayList<CustomInfo.HostRoom>();
-
-        @Override
-        public int getCount() {
-            return HostRoomList.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return HostRoomList.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            final Context context = parent.getContext();
-
-            if (convertView == null) {
-                LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = inflater.inflate(R.layout.activity_host_room, parent, false);
-            }
-
-            ImageView Profile = (ImageView) convertView.findViewById(R.id.hostTab_hostProfile);
-            TextView Name = (TextView) convertView.findViewById(R.id.hostTab_hostName);
-            TextView Bank = (TextView) convertView.findViewById(R.id.hostTab_hostBank);
-            TextView Number = (TextView) convertView.findViewById(R.id.hostTab_hostNumber);
-            TextView date = (TextView) convertView.findViewById(R.id.hostTab_date);
-            TextView content = (TextView) convertView.findViewById(R.id.hostTab_content);
-
-            ListView payNo = (ListView) convertView.findViewById(R.id.hostTab_payNo);
-            ListView payYes = (ListView) convertView.findViewById(R.id.hostTab_payYes);
-
-            CustomInfoAdapter.HostRoomguestAdapter NoHostRoomguestAdapter = new CustomInfoAdapter.HostRoomguestAdapter();
-            CustomInfoAdapter.HostRoomguestAdapter YesHostRoomguestAdapter = new CustomInfoAdapter.HostRoomguestAdapter();
-
-            CustomInfo.HostRoom hostRoom = HostRoomList.get(position);
-            Name.setText(hostRoom.getHostName());
-            Bank.setText(hostRoom.getAccountBank());
-            Number.setText(hostRoom.getAccountNumber());
-            date.setText(hostRoom.getCreated_date());
-            content.setText(hostRoom.getContent());
-
-            JSONArray debits = hostRoom.getDebit_guests();
-            int len = debits.length();
-            for (int i = 0; i < len; i++) {
-                try {
-                    JSONObject object = debits.getJSONObject(i);
-                    if (object.getInt("paidStatus") == 2) {
-
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            payNo.setAdapter(NoHostRoomguestAdapter);
-            payYes.setAdapter(YesHostRoomguestAdapter);
-
-            return convertView;
-        }
-
-        public void addHostRoom(String hostName, String hostBank, String hostNumber, String created_date, String content, JSONArray debit_guests) {
-            CustomInfo.HostRoom hostRoom = new CustomInfo.HostRoom();
-            hostRoom.setHostName(hostName);
-            hostRoom.setAccountBank(hostBank);
-            hostRoom.setAccountNumber(hostNumber);
-            hostRoom.setCreated_date(created_date);
-            hostRoom.setContent(content);
-            hostRoom.setDebit_guests(debit_guests);
-
-            HostRoomList.add(hostRoom);
-        }
-    }
-
     public static class HostRoomguestAdapter extends BaseAdapter {
         private ArrayList<CustomInfo.HostRoomguest> HostRoomguestList = new ArrayList<CustomInfo.HostRoomguest>();
 
@@ -240,24 +162,35 @@ public class CustomInfoAdapter {
                 LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = inflater.inflate(R.layout.hostroom, parent, false);
             }
-
+            ImageView guestStatus = (ImageView) convertView.findViewById(R.id.hostTab_guestStatus);
             ImageView guestProfile = (ImageView) convertView.findViewById(R.id.hostTab_guestProfile);
             TextView guestName = (TextView) convertView.findViewById(R.id.hostTab_guestName);
             TextView guestMoney = (TextView) convertView.findViewById(R.id.hostTab_guestMoney);
+            TextView requestMessage = (TextView) convertView.findViewById(R.id.hostTab_requestMessage);
             Button yesButton = (Button) convertView.findViewById(R.id.hostTab_yesButton);
             Button noButton = (Button) convertView.findViewById(R.id.hostTab_noButton);
 
             CustomInfo.HostRoomguest hostRoomguest = HostRoomguestList.get(position);
+
+            int status = hostRoomguest.getPaidStatus();
+
+            if (status == 0) {
+                guestStatus.setImageResource(R.color.red);
+            } else if (status == 1) {
+                guestStatus.setImageResource(R.color.yellow);
+            } else if (status == 2) {
+                guestStatus.setImageResource(R.color.green);
+            }
             guestName.setText(hostRoomguest.getGuestName());
             int price = hostRoomguest.getPrice();
-            int paid = hostRoomguest.getPaid();
-            String money = Integer.toString(price-paid);
+            String money = Integer.toString(price) + "원";
             guestMoney.setText(money);
+//            requestMessage.setText();
 
             return convertView;
         }
 
-        public void addGuest(JSONObject debit_guest) {
+        public void addHostRoomguest(JSONObject debit_guest) {
             CustomInfo.HostRoomguest hostRoomguest = new CustomInfo.HostRoomguest();
             try {
                 JSONObject user = debit_guest.getJSONObject("user");
@@ -274,17 +207,17 @@ public class CustomInfoAdapter {
         }
     }
 
-    public static class GuestRoomAdapter extends BaseAdapter {
-        private ArrayList<CustomInfo.GuestRoom> GuestRoomList = new ArrayList<CustomInfo.GuestRoom>();
+    public static class GuestRoomguestAdapter extends BaseAdapter {
+        private ArrayList<CustomInfo.GuestRoomguest> GuestRoomguestList = new ArrayList<CustomInfo.GuestRoomguest>();
 
         @Override
         public int getCount() {
-            return GuestRoomList.size();
+            return GuestRoomguestList.size();
         }
 
         @Override
         public Object getItem(int position) {
-            return GuestRoomList.get(position);
+            return GuestRoomguestList.get(position);
         }
 
         @Override
@@ -294,8 +227,48 @@ public class CustomInfoAdapter {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            return null;
+            final Context context = parent.getContext();
+
+            if (convertView == null) {
+                LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                convertView = inflater.inflate(R.layout.guestroom, parent, false);
+            }
+
+            ImageView guestStatus = (ImageView) convertView.findViewById(R.id.guestTab_guestStatus);
+            ImageView guestProfile = (ImageView) convertView.findViewById(R.id.guestTab_guestProfile);
+            TextView guestName = (TextView) convertView.findViewById(R.id.guestTab_guestName);
+            TextView guestMoney = (TextView) convertView.findViewById(R.id.guestTab_guestMoney);
+
+            CustomInfo.GuestRoomguest guestRoomguest = GuestRoomguestList.get(position);
+            int status = guestRoomguest.getPaidStatus();
+            if (status == 0) {
+                guestStatus.setImageResource(R.color.red);
+            } else if (status == 1) {
+                guestStatus.setImageResource(R.color.yellow);
+            } else if (status == 2) {
+                guestStatus.setImageResource(R.color.green);
+            }
+
+            guestName.setText(guestRoomguest.getGuestName());
+            int price = guestRoomguest.getPrice();
+            String money = Integer.toString(price) + "원";
+            guestMoney.setText(money);
+
+            return convertView;
+        }
+
+        public void addGuestRoomguest(JSONObject debit_guest) {
+            CustomInfo.GuestRoomguest guestRoomguest = new CustomInfo.GuestRoomguest();
+            try {
+                JSONObject user = debit_guest.getJSONObject("user");
+                guestRoomguest.setGuestName(user.getString("name"));
+                guestRoomguest.setGuestId(user.getString("facebook_id"));
+                guestRoomguest.setPrice(debit_guest.getInt("price"));
+                guestRoomguest.setPaidStatus(debit_guest.getInt("paidStatus"));
+                GuestRoomguestList.add(guestRoomguest);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
-
 }
