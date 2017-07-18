@@ -16,6 +16,7 @@ public class CustomInfo {
         private String user_fbid;
         private String fbName;
         private String NickName;
+        private boolean is_friend = false;
         private Drawable profileImage;
         private String accountBank;
         private String accountNumber;
@@ -61,6 +62,12 @@ public class CustomInfo {
             return this.accountNumber;
         }
 
+        public void setf (boolean bool) {
+            this.is_friend = bool;
+        }
+        public boolean getf() {
+            return this.is_friend;
+        }
 
         public void setAllHostRoom(List<Room> allHostRoom) {
             if (this.hostRoom == null) {

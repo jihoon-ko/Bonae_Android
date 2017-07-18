@@ -76,14 +76,11 @@ public class LoginActivity extends AppCompatActivity{
                     Bundle parameters = new Bundle();
 //                    parameters.putString("fields", "NewUser");
                     parameters.putString("fields", "id,name,email,gender,birthday");
+                    parameters.putString("locale", "ko_KR");
 
                     request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
                         @Override
                         public void onCompleted(JSONObject object, GraphResponse response) {
-                            Profile profile = Profile.getCurrentProfile();
-                            final String link = profile.getProfilePictureUri(100, 100).toString();
-
-                            getProfile(link);
 
                             String fb_id = null;
                             String fb_name = null;
@@ -117,7 +114,7 @@ public class LoginActivity extends AppCompatActivity{
             Bundle parameters = new Bundle();
 //            parameters.putString("fields", "NewUser");
             parameters.putString("fields", "id,name,email,gender");
-
+            parameters.putString("locale", "ko_KR");
             request = GraphRequest.newMeRequest(mToken, new GraphRequest.GraphJSONObjectCallback() {
                 @Override
                 public void onCompleted(JSONObject object, GraphResponse response) {
@@ -138,37 +135,6 @@ public class LoginActivity extends AppCompatActivity{
             request.executeAsync();
             Log.e("already Login", "here!!");
         }
-    }
-
-    private void getProfile(final String link) {
-        final ImageView imageView = (ImageView) findViewById(R.id.myProfile);
-        imageView.setImageResource(R.color.yellow);
-
-        final Handler handler = new Handler();
-
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                final Bitmap bitmap;
-                try {
-                    URL url = new URL(link);
-                    InputStream is = url.openStream();
-                    bitmap = BitmapFactory.decodeStream(is);
-
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            imageView.setImageBitmap(bitmap);
-                        }
-                    });
-                    imageView.setImageBitmap(bitmap);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        thread.start();
-
     }
 
     @Override

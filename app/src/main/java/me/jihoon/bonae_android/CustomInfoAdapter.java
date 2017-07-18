@@ -58,7 +58,7 @@ public class CustomInfoAdapter {
         public int userCnt(){
             return UserList.size();
         }
-        public CustomInfo.User get(int pos){
+        public CustomInfo.User gett(int pos){
             return UserList.get(pos);
         }
         @Override
@@ -75,28 +75,38 @@ public class CustomInfoAdapter {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             final Context context = parent.getContext();
-
             if (convertView == null) {
                 LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = inflater.inflate(R.layout.user, parent, false);
+                if(adapter_id == 1){
+                    convertView = inflater.inflate(R.layout.user, parent, false);
+                }else{
+                    convertView = inflater.inflate(R.layout.user_add, parent, false);
+                }
             }
             ImageView user_image = (ImageView) convertView.findViewById(R.id.user_image);
             TextView user_name = (TextView) convertView.findViewById(R.id.user_name);
-            CustomInfo.User user = UserList.get(position);
+            CustomInfo.User user = (CustomInfo.User) getItem(position);
 
             // user_image도 처리
             // Glide.with(getApplicationContext()).load(customAddress.getAdrsimage()).into(adrs_image);
             new imageTask(user_image).execute(user.getUser_id());
             user_name.setText(user.getNickName());
 
+            if(adapter_id == 2){
+                ImageView friend_image = (ImageView) convertView.findViewById(R.id.user_can_add);
+                if(user.getf()) friend_image.setVisibility(View.INVISIBLE);
+                else friend_image.setVisibility(View.VISIBLE);
+            }
+
             return convertView;
         }
-        public void addUser(int pos, String fbId, String name, String bank, String num) {
+        public void addUser(int pos, String fbId, String name, String bank, String num, boolean is_friend) {
             CustomInfo.User user = new CustomInfo.User();
             user.setUser_id(fbId);
             user.setNickName(name);
             user.setAccountBank(bank);
             user.setAccountNumber(num);
+            user.setf(is_friend);
             if(pos == -1) {
                 UserList.add(user);
             }else{
@@ -133,7 +143,6 @@ public class CustomInfoAdapter {
         }
         private class imageTask extends AsyncTask<String, Void, Bitmap> {
             ImageView iv;
-            public final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
             private OkHttpClient client;
             public imageTask(ImageView _iv){
                 iv = _iv;
