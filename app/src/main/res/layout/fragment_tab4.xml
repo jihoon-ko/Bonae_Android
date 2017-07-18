@@ -7,14 +7,79 @@
     android:orientation="vertical"
     tools:context="me.jihoon.bonae_android.MainActivity">
 
-    <EditText
-        android:id="@+id/editText4"
+    <RelativeLayout
+        android:id="@+id/myInfo"
         android:layout_width="match_parent"
-        android:layout_height="44dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="4dp"
-        android:layout_marginTop="4dp"
-        android:hint="설설정정" />
+        android:layout_height="100dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:orientation="horizontal"
+        android:background="#DDDDDD">
+        <ImageView
+            android:id="@+id/myProfile"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="30dp"
+            android:src="#759DC8"/>
+        <RelativeLayout
+            android:layout_toRightOf="@id/myProfile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp">
+            <TextView
+                android:id="@+id/myName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="NAME"
+                android:textSize="30dp"/>
+            <TextView
+                android:id="@+id/myBank"
+                android:layout_below="@id/myName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:text="계좌은행"
+                android:textSize="16dp"/>
+            <TextView
+                android:id="@+id/myaccountBank"
+                android:layout_below="@id/myName"
+                android:layout_toRightOf="@id/myBank"
+                android:layout_alignBaseline="@id/myBank"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="BANK"
+                android:textSize="18dp"/>
+            <TextView
+                android:id="@+id/myNumber"
+                android:layout_below="@id/myBank"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:text="계좌번호"
+                android:textSize="16dp"/>
+            <TextView
+                android:id="@+id/myaccountNumber"
+                android:layout_below="@id/myaccountBank"
+                android:layout_toRightOf="@id/myNumber"
+                android:layout_alignBaseline="@id/myNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="NUMBER"
+                android:textSize="18dp"/>
+
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/editmyInfoButton"
+            android:layout_width="60dp"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:text="편집"/>
+    </RelativeLayout>
 
     <TextView
         android:layout_width="wrap_content"

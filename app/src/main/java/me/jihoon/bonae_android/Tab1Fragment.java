@@ -11,7 +11,7 @@ import android.widget.ListView;
  * Created by q on 2017-07-13.
  */
 
-public class Tab1Fragment extends Fragment{
+public class Tab1Fragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 //        super.onCreateView(inflater, container, savedInstanceState);

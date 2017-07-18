@@ -16,10 +16,10 @@
         android:layout_marginTop="4dp"
         android:hint="돈 줄 방, 참여자 검색" />
 
-    <TextView
+    <ListView
+        android:id="@+id/listview_tab3"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Tab3"
-        android:textSize="50dp"/>
+        android:layout_height="wrap_content">
+    </ListView>
 
 </LinearLayout>
