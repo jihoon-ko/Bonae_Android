@@ -85,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
             User.putString("Facebook_Id", Facebook_Id);
             User.putString("Facebook_Name", Facebook_Name);
             fragment.setArguments(User);
-
             mFragmentList.add(fragment);
             mFragmentTitleList.add(title);
         }
@@ -111,6 +110,11 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        requestCode = requestCode & 0xFFFF;
+        if(requestCode == 284){
+            Tab1Fragment.onSuccess(requestCode, resultCode, intent);
+            return;
+        }
         UserInfo = intent.getStringExtra("user_info");
         Token = intent.getStringExtra("Token");
         Facebook_Id = intent.getStringExtra("Facebook_Id");
@@ -125,8 +129,6 @@ public class MainActivity extends AppCompatActivity {
 
                 TabLayout tablayout = (TabLayout) findViewById(R.id.tabs);
                 tablayout.setupWithViewPager(mViewPager);
-            }else{
-                finish();
             }
         } else if (requestCode == REQ_CREATE_ROOM) {
             if (resultCode == RESULT_OK) {

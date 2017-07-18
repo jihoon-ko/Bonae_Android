@@ -84,7 +84,9 @@ public class LoginActivity extends AppCompatActivity{
 
                             Bundle parameters = new Bundle();
 //                    parameters.putString("fields", "NewUser");
+
                             parameters.putString("fields", "id,name,email,gender,birthday");
+                            parameters.putString("locale", "ko_KR");
 
                             request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
                                 @Override
@@ -105,7 +107,7 @@ public class LoginActivity extends AppCompatActivity{
                             request.executeAsync();
                             Log.e("First Login", "here!!");
                         }
-
+                        
                         @Override
                         public void onCancel() {
                             Toast.makeText(LoginActivity.this, "Login Canceled", Toast.LENGTH_SHORT).show();
@@ -121,7 +123,7 @@ public class LoginActivity extends AppCompatActivity{
                     Bundle parameters = new Bundle();
 //            parameters.putString("fields", "NewUser");
                     parameters.putString("fields", "id,name,email,gender");
-
+                    parameters.putString("locale", "ko_KR");
                     request = GraphRequest.newMeRequest(mToken, new GraphRequest.GraphJSONObjectCallback() {
                         @Override
                         public void onCompleted(JSONObject object, GraphResponse response) {

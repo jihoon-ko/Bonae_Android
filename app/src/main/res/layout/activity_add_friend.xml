@@ -6,6 +6,17 @@
     android:layout_height="match_parent"
     tools:context="me.jihoon.bonae_android.AddFriendActivity"
     android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/showMsg_add"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Press Search Button"
+        android:textAlignment="center"
+        android:textColor="#FFFFFFFF"
+        android:background="@color/colorPrimaryDark"
+        android:padding="5dp"
+        android:textSize="17sp" />
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
