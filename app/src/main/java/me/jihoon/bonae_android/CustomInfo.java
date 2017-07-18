@@ -191,18 +191,38 @@ public class CustomInfo {
     }
 
     public static class HostRoomguest {
+        private String Token;
+        private String Facebook_Id;
+        private String Facebook_Name;
+        private String RoomId;
         private String guestName;
         private String guestId;
+        private String debitId;
         private int price;
         private int paid;
         private int paidStatus;
         private int paidPending;
+
+        public void setToken (String token) { this.Token = token; }
+        public String getToken() {return this.Token;}
+
+        public void setFacebook_Id (String fid) { this.Facebook_Id = fid; }
+        public String getFacebook_Id() { return this.Facebook_Id; }
+
+        public void setFacebook_Name (String fname) { this.Facebook_Name = fname; }
+        public String getFacebook_Name() { return this.Facebook_Name; }
+
+        public void setRoomId (String rid) { this.RoomId = rid; }
+        public String getRoomId() { return this.RoomId; }
 
         public void setGuestName (String name) {this.guestName = name; }
         public String getGuestName() {return this.guestName; }
 
         public void setGuestId (String id) {this.guestId = id; }
         public String getGuestId() {return this.guestId; }
+
+        public void setDebitId (String id) {this.debitId = id;}
+        public String getDebitId() {return this.debitId; }
 
         public void setPrice (int Price) {this.price = Price; }
         public int getPrice() {return this.price; }

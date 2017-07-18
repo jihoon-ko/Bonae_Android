@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,6 +40,8 @@ import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import static me.jihoon.bonae_android.R.id.startButton;
+
 public class LoginActivity extends AppCompatActivity{
     static final int REQ_ADD_REGISTER = 2;
 
@@ -52,36 +56,77 @@ public class LoginActivity extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_login);
 
-        callbackManager = CallbackManager.Factory.create();
-        mToken = AccessToken.getCurrentAccessToken();
+        Button startButton = (Button) findViewById(R.id.startButton);
+        startButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FacebookSdk.sdkInitialize(getApplicationContext());
+                setContentView(R.layout.activity_login);
+
+                callbackManager = CallbackManager.Factory.create();
+                mToken = AccessToken.getCurrentAccessToken();
 //        Profile profile = Profile.getCurrentProfile(); facebook profileimg
 //        profile.getProfilePictureUri(200, 200).toString();
-        loading = (TextView) findViewById(R.id.login_loading);
+                loading = (TextView) findViewById(R.id.login_loading);
 
-        if(mToken == null) {
-            loginButton = (LoginButton) findViewById(R.id.fblogin_button);
-            loginButton.setReadPermissions("email", "public_profile", "user_friends");
-            loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-                @Override
-                public void onSuccess(LoginResult loginResult) {
-                    mToken = loginResult.getAccessToken();
-                    Log.e("Token", mToken.getToken());
-                    Log.e("UserId", mToken.getUserId());
-                    Log.e("Permission lists", mToken.getPermissions()+"");
+                if(mToken == null) {
+                    loginButton = (LoginButton) findViewById(R.id.fblogin_button);
+                    loginButton.setReadPermissions("email", "public_profile", "user_friends");
+                    loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+                        @Override
+                        public void onSuccess(LoginResult loginResult) {
+                            mToken = loginResult.getAccessToken();
+                            Log.e("Token", mToken.getToken());
+                            Log.e("UserId", mToken.getUserId());
+                            Log.e("Permission lists", mToken.getPermissions()+"");
 
-                    Bundle parameters = new Bundle();
+                            Bundle parameters = new Bundle();
 //                    parameters.putString("fields", "NewUser");
-                    parameters.putString("fields", "id,name,email,gender,birthday");
-                    parameters.putString("locale", "ko_KR");
 
-                    request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
+                            parameters.putString("fields", "id,name,email,gender,birthday");
+                            parameters.putString("locale", "ko_KR");
+
+                            request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
+                                @Override
+                                public void onCompleted(JSONObject object, GraphResponse response) {
+                                    String fb_id = null;
+                                    String fb_name = null;
+                                    Log.e("TAG", "Facebook Login Result" + response.toString());
+                                    try {
+                                        fb_id = object.get("id").toString();
+                                        fb_name = object.get("name").toString();
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                    new HTTPLoginServer().execute("http://52.78.17.108:3000/auth/login/", fb_id, fb_name);
+                                }
+                            });
+                            request.setParameters(parameters);
+                            request.executeAsync();
+                            Log.e("First Login", "here!!");
+                        }
+                        
+                        @Override
+                        public void onCancel() {
+                            Toast.makeText(LoginActivity.this, "Login Canceled", Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onError(FacebookException error) {
+                            error.printStackTrace();
+                            Toast.makeText(LoginActivity.this, "Login Failed", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else {
+                    Bundle parameters = new Bundle();
+//            parameters.putString("fields", "NewUser");
+                    parameters.putString("fields", "id,name,email,gender");
+                    parameters.putString("locale", "ko_KR");
+                    request = GraphRequest.newMeRequest(mToken, new GraphRequest.GraphJSONObjectCallback() {
                         @Override
                         public void onCompleted(JSONObject object, GraphResponse response) {
-
                             String fb_id = null;
                             String fb_name = null;
                             Log.e("TAG", "Facebook Login Result" + response.toString());
@@ -94,49 +139,14 @@ public class LoginActivity extends AppCompatActivity{
                             new HTTPLoginServer().execute("http://52.78.17.108:3000/auth/login/", fb_id, fb_name);
                         }
                     });
+
                     request.setParameters(parameters);
                     request.executeAsync();
-                    Log.e("First Login", "here!!");
+                    Log.e("already Login", "here!!");
                 }
-
-                @Override
-                public void onCancel() {
-                    Toast.makeText(LoginActivity.this, "Login Canceled", Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onError(FacebookException error) {
-                    error.printStackTrace();
-                    Toast.makeText(LoginActivity.this, "Login Failed", Toast.LENGTH_SHORT).show();
-                }
-            });
-        } else {
-            Bundle parameters = new Bundle();
-//            parameters.putString("fields", "NewUser");
-            parameters.putString("fields", "id,name,email,gender");
-            parameters.putString("locale", "ko_KR");
-            request = GraphRequest.newMeRequest(mToken, new GraphRequest.GraphJSONObjectCallback() {
-                @Override
-                public void onCompleted(JSONObject object, GraphResponse response) {
-                    String fb_id = null;
-                    String fb_name = null;
-                    Log.e("TAG", "Facebook Login Result" + response.toString());
-                    try {
-                        fb_id = object.get("id").toString();
-                        fb_name = object.get("name").toString();
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    new HTTPLoginServer().execute("http://52.78.17.108:3000/auth/login/", fb_id, fb_name);
-                }
-            });
-
-            request.setParameters(parameters);
-            request.executeAsync();
-            Log.e("already Login", "here!!");
-        }
+            }
+        });
     }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

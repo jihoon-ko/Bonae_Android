@@ -17,6 +17,7 @@ public class HostRoomActivity extends AppCompatActivity {
     String Facebook_Id = null;
     String Facebook_Name = null;
     String roomInfo = null;
+    String RoomId = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +33,7 @@ public class HostRoomActivity extends AppCompatActivity {
         try {
             JSONObject roomJSON = new JSONObject(roomInfo);
             JSONObject user_host = roomJSON.getJSONObject("user_host");
+            RoomId = roomJSON.getString("id");
 
             ImageView Profile = (ImageView) findViewById(R.id.hostTab_hostProfile);
             TextView Name = (TextView) findViewById(R.id.hostTab_hostName);
@@ -56,12 +58,8 @@ public class HostRoomActivity extends AppCompatActivity {
             int len = debit_guests.length();
             for (int i = 0; i < len; i++) {
                 JSONObject debit = debit_guests.getJSONObject(i);
-
-                if (debit.getInt("paidStatus") == 2) {
-                    hostRoomguestAdapter.addHostRoomguest(debit);
-                } else {
-                    hostRoomguestAdapter.addHostRoomguest(debit);
-                }
+                hostRoomguestAdapter.addHostRoomguest(debit, RoomId, Token, Facebook_Id, Facebook_Name);
+                hostRoomguestAdapter.notifyDataSetChanged();
             }
             guests.setAdapter(hostRoomguestAdapter);
         } catch (JSONException e) {
