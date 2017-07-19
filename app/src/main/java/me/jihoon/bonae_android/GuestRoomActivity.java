@@ -1,6 +1,9 @@
 package me.jihoon.bonae_android;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.hardware.camera2.params.Face;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -24,6 +27,11 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class GuestRoomActivity extends AppCompatActivity {
     String Token = null;
@@ -72,6 +80,7 @@ public class GuestRoomActivity extends AppCompatActivity {
             date.setText(roomJSON.getString("created_date"));
             Left.setText(Integer.toString(roomJSON.getInt("debit_left")));
             content.setText(roomJSON.getString("content_text"));
+            new imageTask(Profile).execute(user_host.getString("facebook_id"));
 
             // under header bar
             statusSignal = (ImageView) findViewById(R.id.guestTab_statussignal);
@@ -85,7 +94,7 @@ public class GuestRoomActivity extends AppCompatActivity {
             errorMessage = (TextView) findViewById(R.id.guestTab_error);
             errorMessage.setText("");
             loading.setText("");
-
+            new imageTask(myProfile).execute(Facebook_Id);
             JSONArray debit_guests = roomJSON.getJSONArray("debit_guests");
             CustomInfoAdapter.GuestRoomguestAdapter guestRoomguestAdapter = new CustomInfoAdapter.GuestRoomguestAdapter();
             int len = debit_guests.length();
@@ -149,6 +158,52 @@ public class GuestRoomActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+    private class imageTask extends AsyncTask<String, Void, Bitmap> {
+        ImageView iv;
+        public final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+        private OkHttpClient client;
+        public imageTask(ImageView _iv){
+            iv = _iv;
+            client = new OkHttpClient();
+        }
+        private String send(String url) throws IOException {
+            //RequestBody body = RequestBody.create(JSON, json);
+            Request request = new Request.Builder()
+                    .url(url)
+                    .addHeader("x-access-token", Token)
+                    .addHeader("x-access-id", Facebook_Id)
+                    .build();
+            Response response = client.newCall(request).execute();
+            return response.body().string();
+        }
+        @Override
+        protected Bitmap doInBackground(String... str){
+            try {
+                String urlJson = send("http://52.78.17.108:3000/user/id/" + str[0] + "/picture/");
+                JSONObject jsonObj = new JSONObject(urlJson);
+                String url = jsonObj.getString("url");
+                Bitmap res = null;
+                try {
+                    InputStream in = new java.net.URL(url).openStream();
+                    res = BitmapFactory.decodeStream(in);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return res;
+            }catch(Exception e){
+                e.printStackTrace();
+                return null;
+            }
+        }
+        @Override
+        protected void onPostExecute(Bitmap res){
+            //System.out.println(res);
+            if(res != null){
+                super.onPostExecute(res);
+                iv.setImageBitmap(res);
+            }
+        }
+    };
 
     @Override
     public void onBackPressed() {

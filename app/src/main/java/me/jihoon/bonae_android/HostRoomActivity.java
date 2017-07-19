@@ -1,6 +1,9 @@
 package me.jihoon.bonae_android;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,6 +14,14 @@ import android.widget.TextView;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStream;
+
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class HostRoomActivity extends AppCompatActivity {
     String Token = null;
@@ -29,7 +40,6 @@ public class HostRoomActivity extends AppCompatActivity {
         Facebook_Id = intent.getStringExtra("Facebook_Id");
         Facebook_Name = intent.getStringExtra("Facebook_Name");
         roomInfo = intent.getStringExtra("roomInfo");
-
         try {
             JSONObject roomJSON = new JSONObject(roomInfo);
             JSONObject user_host = roomJSON.getJSONObject("user_host");
@@ -62,6 +72,7 @@ public class HostRoomActivity extends AppCompatActivity {
                 hostRoomguestAdapter.notifyDataSetChanged();
             }
             guests.setAdapter(hostRoomguestAdapter);
+            new imageTask(Profile).execute(Facebook_Id);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -73,4 +84,50 @@ public class HostRoomActivity extends AppCompatActivity {
         setResult(RESULT_CANCELED, intent);
         finish();
     }
+    private class imageTask extends AsyncTask<String, Void, Bitmap> {
+        ImageView iv;
+        public final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+        private OkHttpClient client;
+        public imageTask(ImageView _iv){
+            iv = _iv;
+            client = new OkHttpClient();
+        }
+        private String send(String url) throws IOException {
+            //RequestBody body = RequestBody.create(JSON, json);
+            Request request = new Request.Builder()
+                    .url(url)
+                    .addHeader("x-access-token", Token)
+                    .addHeader("x-access-id", Facebook_Id)
+                    .build();
+            Response response = client.newCall(request).execute();
+            return response.body().string();
+        }
+        @Override
+        protected Bitmap doInBackground(String... str){
+            try {
+                String urlJson = send("http://52.78.17.108:3000/user/id/" + str[0] + "/picture/");
+                JSONObject jsonObj = new JSONObject(urlJson);
+                String url = jsonObj.getString("url");
+                Bitmap res = null;
+                try {
+                    InputStream in = new java.net.URL(url).openStream();
+                    res = BitmapFactory.decodeStream(in);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return res;
+            }catch(Exception e){
+                e.printStackTrace();
+                return null;
+            }
+        }
+        @Override
+        protected void onPostExecute(Bitmap res){
+            //System.out.println(res);
+            if(res != null){
+                super.onPostExecute(res);
+                iv.setImageBitmap(res);
+            }
+        }
+    };
 }
