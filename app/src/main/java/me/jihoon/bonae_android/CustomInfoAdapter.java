@@ -278,6 +278,53 @@ public class CustomInfoAdapter {
         String Facebook_Name = null;
         String keyword = null;
 
+        private class imageTask extends AsyncTask<String, Void, Bitmap> {
+            ImageView iv;
+            public final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+            private OkHttpClient client;
+            public imageTask(ImageView _iv){
+                iv = _iv;
+                client = new OkHttpClient();
+            }
+            private String send(String url) throws IOException {
+                //RequestBody body = RequestBody.create(JSON, json);
+                Request request = new Request.Builder()
+                        .url(url)
+                        .addHeader("x-access-token", Token)
+                        .addHeader("x-access-id", Facebook_Id)
+                        .build();
+                Response response = client.newCall(request).execute();
+                return response.body().string();
+            }
+            @Override
+            protected Bitmap doInBackground(String... str){
+                try {
+                    String urlJson = send("http://52.78.17.108:3000/user/id/" + str[0] + "/picture/");
+                    JSONObject jsonObj = new JSONObject(urlJson);
+                    String url = jsonObj.getString("url");
+                    Bitmap res = null;
+                    try {
+                        InputStream in = new java.net.URL(url).openStream();
+                        res = BitmapFactory.decodeStream(in);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    return res;
+                }catch(Exception e){
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+            @Override
+            protected void onPostExecute(Bitmap res){
+                //System.out.println(res);
+                if(res != null){
+                    super.onPostExecute(res);
+                    iv.setImageBitmap(res);
+                }
+            }
+        };
+
         private ArrayList<CustomInfo.HostRoomguest> HostRoomguestList = new ArrayList<CustomInfo.HostRoomguest>();
 
         @Override
@@ -319,7 +366,6 @@ public class CustomInfoAdapter {
             Token = hostRoomguest.getToken();
             Facebook_Id = hostRoomguest.getFacebook_Id();
             Facebook_Name = hostRoomguest.getFacebook_Name();
-
             if (status == 0) {
                 guestStatus.setImageResource(R.color.red);
                 noButton.setVisibility(View.INVISIBLE);
