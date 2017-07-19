@@ -32,6 +32,7 @@ public class GuestRoomActivity extends AppCompatActivity {
     String roomInfo = null;
     TextView loading = null;
     String debit_id = null;
+    String mydebit_id = null;
     ImageView statusSignal = null;
     TextView statusWord = null;
     TextView won = null;
@@ -99,6 +100,7 @@ public class GuestRoomActivity extends AppCompatActivity {
                 String myid = user.getString("facebook_id");
                 if (myid.equals(Facebook_Id)) {
                     // if guest is me
+                    mydebit_id = debit.getString("debit_id");
                     myName.setText(user.getString("name"));
                     myDebit.setText(debit.getString("price")+"원");
                     final int status = debit.getInt("paidStatus");
@@ -126,13 +128,13 @@ public class GuestRoomActivity extends AppCompatActivity {
                                 try {
                                     int req_money = Integer.parseInt(money);
 
-                                    new HTTPRequest().execute("http://52.78.17.108:3000/room/id/"+RoomId+"/request", Token, Facebook_Id, Facebook_Name, debit_id, money);
+                                    new HTTPRequest().execute("http://52.78.17.108:3000/room/id/"+RoomId+"/request", Token, Facebook_Id, Facebook_Name, mydebit_id, money);
 
                                 } catch (Exception e) {
                                     errorMessage.setText("숫자를 입력하세요");
                                 }
                             } else if (status == 1) {
-                                new HTTPCancel().execute("http://52.78.17.108:3000/room/id/"+RoomId+"/cancel", Token, Facebook_Id, Facebook_Name, debit_id);
+                                new HTTPCancel().execute("http://52.78.17.108:3000/room/id/"+RoomId+"/cancel", Token, Facebook_Id, Facebook_Name, mydebit_id);
                             }
                         }
                     });

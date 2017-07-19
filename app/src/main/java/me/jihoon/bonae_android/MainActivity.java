@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         requestCode = requestCode & 0xFFFF;
-        if(requestCode == 284){
+        if(requestCode == 284) {
             Tab1Fragment.onSuccess(requestCode, resultCode, intent);
             return;
         }
@@ -137,11 +137,6 @@ public class MainActivity extends AppCompatActivity {
                 Boolean divide = intent.getExtras().getBoolean("divide");
 
                 new HTTPCreateRoom().execute("http://52.78.17.108:3000/room/create/", Token, Facebook_Id, Facebook_Name, foodType, foodPrice, divide.toString());
-            }
-        } else if (requestCode == REQ_EDIT_PROFILE) {
-            if (resultCode == RESULT_OK) {
-
-                
             }
         }
     }
