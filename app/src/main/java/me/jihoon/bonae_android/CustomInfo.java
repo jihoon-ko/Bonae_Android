@@ -242,6 +242,7 @@ public class CustomInfo {
         private String guestName;
         private String guestId;
         private int price;
+        private int paid;
         private int paidStatus;
 
         public void setGuestProfile (int profile) {this.guestProfile = profile;}
@@ -255,6 +256,9 @@ public class CustomInfo {
 
         public void setPrice (int Price) {this.price = Price; }
         public int getPrice() {return this.price; }
+
+        public void setPaid (int Paid) {this.price = Paid; }
+        public int getPaid() {return this.paid; }
 
         public void setPaidStatus (int paidstatus) {this.paidStatus = paidstatus; }
         public int getPaidStatus() {return this.paidStatus; }

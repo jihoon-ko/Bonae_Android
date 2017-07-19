@@ -270,8 +270,7 @@ public class CustomInfoAdapter {
         TextView requestMessage = null;
         Button yesButton = null;
         Button noButton = null;
-        String debit_id = null;
-        int status;
+        String mydebit = null;
         String RoomId = null;
         String Token = null;
         String Facebook_Id = null;
@@ -313,8 +312,8 @@ public class CustomInfoAdapter {
             loading = (TextView) convertView.findViewById(R.id.hostTab_loading);
 
             CustomInfo.HostRoomguest hostRoomguest = HostRoomguestList.get(position);
-            status = hostRoomguest.getPaidStatus();
-            debit_id = hostRoomguest.getDebitId();
+            final int status = hostRoomguest.getPaidStatus();
+            final String debit_id = hostRoomguest.getDebitId();
             RoomId = hostRoomguest.getRoomId();
             Token = hostRoomguest.getToken();
             Facebook_Id = hostRoomguest.getFacebook_Id();
@@ -322,6 +321,7 @@ public class CustomInfoAdapter {
 
             if (status == 0) {
                 guestStatus.setImageResource(R.color.red);
+                yesButton.setVisibility(View.VISIBLE);
                 noButton.setVisibility(View.INVISIBLE);
                 requestMessage.setText("");
                 loading.setText("");
@@ -331,7 +331,6 @@ public class CustomInfoAdapter {
                         new HTTPAccept().execute("http://52.78.17.108:3000/room/id/"+RoomId+"/accept", Token, Facebook_Id, Facebook_Name, debit_id);
                     }
                 });
-
             } else if (status == 1) {
                 guestStatus.setImageResource(R.color.yellow);
                 yesButton.setVisibility(View.VISIBLE);
@@ -340,6 +339,19 @@ public class CustomInfoAdapter {
                 String msg = Integer.toString(pending);
                 requestMessage.setText(msg + "원 요청!");
                 loading.setText("");
+                yesButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        new HTTPAccept().execute("http://52.78.17.108:3000/room/id/"+RoomId+"/accept", Token, Facebook_Id, Facebook_Name, debit_id);
+                    }
+                });
+                noButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        new HTTPReject().execute("http://52.78.17.108:3000/room/id/"+RoomId+"/reject", Token, Facebook_Id, Facebook_Name, debit_id);
+                    }
+                });
+
             } else if (status == 2) {
                 guestStatus.setImageResource(R.color.green);
                 yesButton.setVisibility(View.INVISIBLE);
@@ -349,7 +361,8 @@ public class CustomInfoAdapter {
             }
             guestName.setText(hostRoomguest.getGuestName());
             int price = hostRoomguest.getPrice();
-            String money = Integer.toString(price) + "원";
+            int paid = hostRoomguest.getPaid();
+            String money = Integer.toString(price-paid) + "원";
             guestMoney.setText(money);
 //            requestMessage.setText();
 
@@ -405,6 +418,83 @@ public class CustomInfoAdapter {
         }
 
         private class HTTPAccept extends AsyncTask<String, Void, String> {
+            String Debit = null;
+
+            @Override
+            protected void onPreExecute() {
+                loading.setText("취소요청중...");
+            }
+
+            @Override
+            protected String doInBackground(String... params) {
+                String http_res = null;
+                URL url = null;
+                Debit = params[4];
+                HttpURLConnection connection = null;
+                try {
+                    url = new URL(params[0]);
+                    connection = (HttpURLConnection) url.openConnection();
+
+                    connection.setRequestMethod("POST");
+                    connection.setUseCaches(false);
+                    connection.setConnectTimeout(10000);
+                    connection.setRequestProperty("x-access-token", params[1]);
+                    connection.setRequestProperty("x-access-id", params[2]);
+                    connection.setDoOutput(true);
+                    connection.setDoInput(true);
+                    connection.setRequestProperty("Content-Type", "application/json");
+
+                    JSONObject bodyJSON = new JSONObject();
+                    bodyJSON.put("id", params[4]);
+                    String http_req = bodyJSON.toString();
+
+                    System.out.println(http_req);
+                    OutputStream os = connection.getOutputStream();
+                    OutputStreamWriter osw = new OutputStreamWriter(os, "UTF-8");
+                    osw.write(http_req);
+                    osw.flush();
+                    osw.close();
+
+                    int resCode = connection.getResponseCode();
+                    if (HttpURLConnection.HTTP_OK == resCode) {
+                        Log.e("Connect Complete", "HTTP_OK");
+                        String result = getTextFrom(connection.getInputStream());
+                        JSONObject resJSON = new JSONObject(result);
+                        resJSON.put("debit_id", Debit);
+                        http_res = resJSON.toString();
+                    } else {
+                        http_res = connection.getResponseCode() + "-" + connection.getResponseMessage();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                if (connection != null) {
+                    connection.disconnect();
+                }
+                return http_res;
+            }
+
+            @Override
+            protected void onPostExecute(String result) {
+                JSONObject JSONResponse = null;
+                String ok = null;
+                try {
+                    JSONResponse = new JSONObject(result);
+                    ok = JSONResponse.getString("ok");
+                    String dbt = JSONResponse.getString("debit_id");
+
+                    if ("1".equals(ok)) {
+                        new HTTPConnectHostRoom().execute("http://52.78.17.108:3000/room/id/"+RoomId+"/", Token, Facebook_Id, Facebook_Name, dbt);
+                    } else {
+                        Log.e("There are Error!", result);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        private class HTTPReject extends AsyncTask<String, Void, String> {
             String Debit = null;
 
             @Override
@@ -608,7 +698,8 @@ public class CustomInfoAdapter {
 
             guestName.setText(guestRoomguest.getGuestName());
             int price = guestRoomguest.getPrice();
-            String money = Integer.toString(price) + "원";
+            int paid = guestRoomguest.getPaid();
+            String money = Integer.toString(price-paid) + "원";
             guestMoney.setText(money);
 
             return convertView;
@@ -621,6 +712,7 @@ public class CustomInfoAdapter {
                 guestRoomguest.setGuestName(user.getString("name"));
                 guestRoomguest.setGuestId(user.getString("facebook_id"));
                 guestRoomguest.setPrice(debit_guest.getInt("price"));
+                guestRoomguest.setPaid(debit_guest.getInt("paid"));
                 guestRoomguest.setPaidStatus(debit_guest.getInt("paidStatus"));
                 GuestRoomguestList.add(guestRoomguest);
             } catch (JSONException e) {

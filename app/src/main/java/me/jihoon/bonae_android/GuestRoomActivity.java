@@ -102,7 +102,9 @@ public class GuestRoomActivity extends AppCompatActivity {
                     // if guest is me
                     mydebit_id = debit.getString("debit_id");
                     myName.setText(user.getString("name"));
-                    myDebit.setText(debit.getString("price")+"원");
+                    int price = debit.getInt("price");
+                    int paid = debit.getInt("paid");
+                    myDebit.setText(Integer.toString(price-paid)+"원");
                     final int status = debit.getInt("paidStatus");
                     if (status == 0) {
                         statusSignal.setImageResource(R.color.red);
