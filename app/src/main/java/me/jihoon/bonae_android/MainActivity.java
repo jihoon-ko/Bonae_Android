@@ -34,6 +34,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import static me.jihoon.bonae_android.Tab2Fragment.REQ_CONNECT_HOST_ROOM;
+import static me.jihoon.bonae_android.Tab3Fragment.REQ_CONNECT_GUEST_ROOM;
+
 public class MainActivity extends AppCompatActivity {
     static final int REQ_ADD_LOGIN = 1;
     static final int REQ_CREATE_ROOM = 3;
@@ -114,6 +117,12 @@ public class MainActivity extends AppCompatActivity {
         if(requestCode == 284) {
             Tab1Fragment.onSuccess(requestCode, resultCode, intent);
             return;
+        }else if(requestCode == REQ_CONNECT_HOST_ROOM){
+            Tab2Fragment.onSuccess();
+            return;
+        }else if(requestCode == REQ_CONNECT_GUEST_ROOM){
+            Tab3Fragment.onSuccess();
+            return;
         }
         UserInfo = intent.getStringExtra("user_info");
         Token = intent.getStringExtra("Token");
@@ -137,6 +146,8 @@ public class MainActivity extends AppCompatActivity {
                 Boolean divide = intent.getExtras().getBoolean("divide");
 
                 new HTTPCreateRoom().execute("http://52.78.17.108:3000/room/create/", Token, Facebook_Id, Facebook_Name, foodType, foodPrice, divide.toString());
+            }else{
+                Tab2Fragment.onSuccess();
             }
         }
     }
@@ -231,6 +242,7 @@ public class MainActivity extends AppCompatActivity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+            Tab2Fragment.onSuccess();
             Intent intent = new Intent();
             intent.putExtra("Room_Id", Room_Id);
         }

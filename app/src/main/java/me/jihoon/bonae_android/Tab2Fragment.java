@@ -30,6 +30,17 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
+import static me.jihoon.bonae_android.Tab2Fragment.Facebook_Id;
+import static me.jihoon.bonae_android.Tab2Fragment.Token;
+import static me.jihoon.bonae_android.Tab2Fragment.adapter;
+import static me.jihoon.bonae_android.Tab3Fragment.listView;
+
 /**
  * Created by q on 2017-07-13.
  */
@@ -39,10 +50,11 @@ public class Tab2Fragment extends Fragment{
     static final int REQ_CONNECT_HOST_ROOM = 4;
 
     JSONObject UserJSON = null;
-    String Token = null;
-    String Facebook_Id = null;
-    String Facebook_Name = null;
-
+    public static String Token = null;
+    public static String Facebook_Id = null;
+    public static String Facebook_Name = null;
+    public static CustomInfoAdapter.RoomAdapter adapter;
+    public static ListView listView;
     public void Setting(LayoutInflater inflater, ViewGroup container) {
         Token = this.getArguments().getString("Token");
         Facebook_Id = this.getArguments().getString("Facebook_Id");
@@ -75,21 +87,24 @@ public class Tab2Fragment extends Fragment{
             }
         });
 
-        ListView listView = (ListView) view.findViewById(R.id.listview_tab2);
-        CustomInfoAdapter.RoomAdapter adapter = makeHostRoom();
+        listView = (ListView) view.findViewById(R.id.listview_tab2);
+        //CustomInfoAdapter.RoomAdapter adapter = makeHostRoom();
+        adapter = new CustomInfoAdapter.RoomAdapter();
         listView.setAdapter(adapter);
+        new getHostTask().execute();
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String HostRoomId = null;
                 String keyword = null;
                 try {
-                    JSONArray hostRoom = UserJSON.getJSONArray("room_pending_host");
-                    int len = hostRoom.length();
-                    JSONObject hostRoomJSON = hostRoom.getJSONObject(len-1-position);
-                    HostRoomId = hostRoomJSON.getString("room");
-                    keyword = hostRoomJSON.getString("keyword");
-                } catch (JSONException e) {
+                    //JSONArray hostRoom = UserJSON.getJSONArray("room_pending_host");
+                    //int len = hostRoom.length();
+                    //JSONObject hostRoomJSON = hostRoom.getJSONObject(len-1-position);
+                    CustomInfo.Room target_obj = (CustomInfo.Room) adapter.getItem(position);
+                    HostRoomId = target_obj.getRoom_id();
+                    keyword = target_obj.getContent();
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 new HTTPConnectHostRoom().execute("http://52.78.17.108:3000/room/id/"+HostRoomId+"/", Token, Facebook_Id, Facebook_Name, keyword);
@@ -97,7 +112,10 @@ public class Tab2Fragment extends Fragment{
         });
         return view;
     }
-
+    public static void onSuccess(){
+        new getHostTask().execute();
+    }
+    /*
     private CustomInfoAdapter.RoomAdapter makeHostRoom() {
         CustomInfoAdapter.RoomAdapter adapter = new CustomInfoAdapter.RoomAdapter();
         try {
@@ -120,6 +138,7 @@ public class Tab2Fragment extends Fragment{
 
         return adapter;
     }
+    */
 
     public class HTTPConnectHostRoom extends AsyncTask<String, Void, String> {
         String Token = null;
@@ -211,3 +230,60 @@ public class Tab2Fragment extends Fragment{
     }
 
 }
+
+class getHostTask extends AsyncTask<String, Void, String>{
+    @Override
+    protected void onPreExecute(){
+        adapter.clearItem();
+    }
+    public final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+    private OkHttpClient client;
+    private String send(String url) throws IOException {
+        //RequestBody body = RequestBody.create(JSON, json);
+        client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("x-access-token", Token)
+                .addHeader("x-access-id", Facebook_Id)
+                //.post(body)
+                .build();
+        Response response = client.newCall(request).execute();
+        return response.body().string();
+    }
+    @Override
+    protected String doInBackground(String... str){
+        System.out.println("!!");
+        try{
+            return send("http://52.78.17.108:3000/user/id/"+Facebook_Id+"/");
+        }catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+    @Override
+    protected void onPostExecute(String res){
+        if(res != null){
+            super.onPostExecute(res);
+            try {
+                JSONObject jsonObj = new JSONObject(res);
+                JSONArray target = jsonObj.getJSONArray("room_pending_host");
+                int len = target.length();
+                for (int i = len-1; i >= 0; i--) {
+                    JSONObject HostRoomJSON = target.getJSONObject(i);
+                    String roomID = HostRoomJSON.getString("room");
+                    String keyword = HostRoomJSON.getString("keyword");
+                    int left = HostRoomJSON.getJSONObject("guest_number").getInt("left");
+                    int total = HostRoomJSON.getJSONObject("guest_number").getInt("total");
+                    String number = Integer.toString(left) + " / " + Integer.toString(total);
+                    String price = HostRoomJSON.getString("left");
+                    String Date = HostRoomJSON.getString("created_date");
+                    adapter.addRoom(roomID, keyword, number, price, Date);
+                }
+                listView.invalidateViews();
+                listView.postInvalidate();
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
+};

@@ -252,6 +252,7 @@ public class CustomInfoAdapter {
             room.setDate(date);
 
             RoomList.add(room);
+            notifyDataSetChanged();
         }
         public void addRoom(String roomID, String content, String price, String date) {
             CustomInfo.Room room = new CustomInfo.Room();
@@ -261,6 +262,11 @@ public class CustomInfoAdapter {
             room.setDate(date);
 
             RoomList.add(room);
+            notifyDataSetChanged();
+        }
+        public void clearItem(){
+            RoomList.clear();
+            notifyDataSetChanged();
         }
     }
 

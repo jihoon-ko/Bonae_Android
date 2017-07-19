@@ -24,6 +24,16 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
+import static me.jihoon.bonae_android.Tab3Fragment.Facebook_Id;
+import static me.jihoon.bonae_android.Tab3Fragment.Token;
+import static me.jihoon.bonae_android.Tab3Fragment.adapter;
+import static me.jihoon.bonae_android.Tab3Fragment.listView;
+
 /**
  * Created by q on 2017-07-13.
  */
@@ -32,9 +42,11 @@ public class Tab3Fragment extends Fragment {
     static final int REQ_CONNECT_GUEST_ROOM = 5;
 
     JSONObject UserJSON = null;
-    String Token = null;
-    String Facebook_Id = null;
-    String Facebook_Name = null;
+    public static String Token = null;
+    public static String Facebook_Id = null;
+    public static String Facebook_Name = null;
+    public static CustomInfoAdapter.RoomAdapter adapter = null;
+    public static ListView listView;
 
     public void Setting(LayoutInflater inflater, ViewGroup container) {
         Token = this.getArguments().getString("Token");
@@ -47,6 +59,9 @@ public class Tab3Fragment extends Fragment {
             e.printStackTrace();
         }
     }
+    public static void onSuccess(){
+        new getGuestTask().execute();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -55,19 +70,22 @@ public class Tab3Fragment extends Fragment {
 
         Setting(inflater, container);
 
-        ListView listView = (ListView) view.findViewById(R.id.listview_tab3);
-        CustomInfoAdapter.RoomAdapter adapter = makeGuestRoom();
+        listView = (ListView) view.findViewById(R.id.listview_tab3);
+        adapter = new CustomInfoAdapter.RoomAdapter();//makeGuestRoom();
         listView.setAdapter(adapter);
+        new getGuestTask().execute();
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String GuestRoomId = null;
                 try {
-                    JSONArray guestRoom = UserJSON.getJSONArray("room_pending_guest");
-                    int len = guestRoom.length();
-                    JSONObject guestRoomJSON = guestRoom.getJSONObject(len-1-position);
-                    GuestRoomId = guestRoomJSON.getString("room");
-                } catch (JSONException e) {
+                    //JSONArray guestRoom = UserJSON.getJSONArray("room_pending_guest");
+                    //int len = guestRoom.length();
+                    //JSONObject guestRoomJSON = guestRoom.getJSONObject(len-1-position);
+                    CustomInfo.Room target_obj = (CustomInfo.Room) adapter.getItem(position);
+                    GuestRoomId = target_obj.getRoom_id();
+                    //guestRoomJSON.getString("room");
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 new HTTPConnectGuestRoom().execute("http://52.78.17.108:3000/room/id/"+GuestRoomId+"/", Token, Facebook_Id, Facebook_Name);
@@ -76,7 +94,7 @@ public class Tab3Fragment extends Fragment {
 
         return view;
     }
-
+    /*
     private CustomInfoAdapter.RoomAdapter makeGuestRoom() {
         CustomInfoAdapter.RoomAdapter adapter = new CustomInfoAdapter.RoomAdapter();
         try {
@@ -96,6 +114,7 @@ public class Tab3Fragment extends Fragment {
 
         return adapter;
     }
+    */
     public class HTTPConnectGuestRoom extends AsyncTask<String, Void, String> {
         String Token = null;
         String Facebook_Id = null;
@@ -177,3 +196,57 @@ public class Tab3Fragment extends Fragment {
         return sb.toString();
     }
 }
+
+class getGuestTask extends AsyncTask<String, Void, String>{
+    @Override
+    protected void onPreExecute(){
+        adapter.clearItem();
+    }
+    public final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+    private OkHttpClient client;
+    private String send(String url) throws IOException {
+        //RequestBody body = RequestBody.create(JSON, json);
+        client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("x-access-token", Token)
+                .addHeader("x-access-id", Facebook_Id)
+                //.post(body)
+                .build();
+        Response response = client.newCall(request).execute();
+        return response.body().string();
+    }
+    @Override
+    protected String doInBackground(String... str){
+        System.out.println("!!");
+        try{
+            return send("http://52.78.17.108:3000/user/id/"+Facebook_Id+"/");
+        }catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+    @Override
+    protected void onPostExecute(String res){
+        if(res != null){
+            super.onPostExecute(res);
+            try {
+                JSONObject jsonObj = new JSONObject(res);
+                JSONArray target = jsonObj.getJSONArray("room_pending_guest");
+                int len = target.length();
+                for (int i = len-1; i >= 0; i--) {
+                    JSONObject guestRoomJSON = target.getJSONObject(i);
+                    String roomID = guestRoomJSON.getString("room");
+                    String keyword = guestRoomJSON.getString("keyword");
+                    String price = guestRoomJSON.getString("left");
+                    String Date = guestRoomJSON.getString("created_date");
+                    adapter.addRoom(roomID, keyword, price, Date);
+                }
+                listView.invalidateViews();
+                listView.postInvalidate();
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
+};
