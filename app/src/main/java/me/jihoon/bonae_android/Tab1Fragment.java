@@ -83,7 +83,6 @@ public class Tab1Fragment extends Fragment {
                 final CustomInfo.User user = (CustomInfo.User) adapter.getItem(position);
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setTitle("친구를 삭제하시겠습니까?")
-                        .setMessage("친구를 삭제하시곘습니까?")
                         .setCancelable(false)
                         .setPositiveButton("확인", new DialogInterface.OnClickListener(){
                             public void onClick(DialogInterface dialog, int whichButton){
