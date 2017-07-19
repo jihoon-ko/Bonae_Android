@@ -361,6 +361,10 @@ public class CustomInfoAdapter {
             CustomInfo.HostRoomguest hostRoomguest = HostRoomguestList.get(position);
             final int status = hostRoomguest.getPaidStatus();
             final String debit_id = hostRoomguest.getDebitId();
+
+            String profile = hostRoomguest.getGuestId();
+
+            new imageTask(guestProfile).execute(profile);
             RoomId = hostRoomguest.getRoomId();
             Token = hostRoomguest.getToken();
             Facebook_Id = hostRoomguest.getFacebook_Id();
